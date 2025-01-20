@@ -1,34 +1,27 @@
 package com.example.tugasakhir.service
 
-import com.example.tugasakhir.model.AllPasienResponse
 import com.example.tugasakhir.model.Pasien
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
-
+import retrofit2.Response
+import retrofit2.http.*
 
 interface PasienApiService {
 
-    // Mengambil daftar semua pasien
+    @Headers(
+        "Accept: application/json",
+        "Content-Type: application/json",
+    )
     @GET("pasien/all")
-    suspend fun getAllPasien(): AllPasienResponse
+    suspend fun getAllPasien(): List<Pasien>
 
-    // Menambahkan data pasien
-    @POST("pasien")
-    suspend fun insertPasien(@Body pasien: Pasien): AllPasienResponse
+    @GET("pasien/detail.php")
+    suspend fun getPasienById(@Query("id") idPasien: String): Pasien
 
-    // Memperbarui data pasien berdasarkan ID
-    @PUT("pasien/{id}")
-    suspend fun updatePasien(@Path("id") idPasien: Int, @Body pasien: Pasien): AllPasienResponse
+    @POST("pasien/insert.php")
+    suspend fun insertPasien(@Body pasien: Pasien)
 
-    // Menghapus pasien berdasarkan ID
-    @DELETE("pasien/{id}")
-    suspend fun deletePasien(@Path("id") idPasien: Int): AllPasienResponse
+    @PUT("pasien/update.php")
+    suspend fun updatePasien(@Query("id") idPasien: String, @Body pasien: Pasien)
 
-    // Mengambil data pasien berdasarkan ID
-    @GET("pasien/{id}")
-    suspend fun getPasienById(@Path("id") idPasien: Int): AllPasienResponse
+    @DELETE("pasien/delete.php")
+    suspend fun deletePasien(@Query("id") idPasien: String): Response<Void>
 }
