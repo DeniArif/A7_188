@@ -2,19 +2,29 @@ package com.example.tugasakhir.ui.viewpasien
 
 import CostumeTopAppBar
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -127,3 +137,89 @@ fun OnError(retryAction: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun PasienLayout(
+    pasien: List<Pasien>,
+    modifier: Modifier = Modifier,
+    onDetailClick: (Pasien) -> Unit,
+    onDeleteClick: (Pasien) -> Unit = {}
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(pasien) { pasien ->
+            PasienCard(
+                pasien = pasien,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onDetailClick(pasien) },
+                onDeleteClick = { onDeleteClick(pasien) }
+            )
+        }
+    }
+}
+
+@Composable
+fun PasienCard(
+    pasien: Pasien,
+    modifier: Modifier = Modifier,
+    onDeleteClick: (Pasien) -> Unit = {}
+) {
+    // Card container
+    Card(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Row for Name and ID
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = pasien.nama,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(Modifier.weight(1f)) // Spacer to push delete button to the right
+
+                // Delete button
+                IconButton(onClick = { onDeleteClick(pasien) }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Pasien"
+                    )
+                }
+
+                // Display patient ID
+                Text(
+                    text = pasien.idPasien,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            // Display additional information about the patient
+            Text(
+                text = "Alamat: ${pasien.alamat}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Telepon: ${pasien.nomorTelepon}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Tanggal Lahir: ${pasien.tanggalLahir}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Riwayat Medikal: ${pasien.riwayatMedikal}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
