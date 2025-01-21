@@ -1,5 +1,6 @@
 package com.example.tugasakhir.ui.viewpasien
 
+import CostumeTopAppBar
 import PasienDetailViewModel
 import PasienDetailUiState
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tugasakhir.model.Pasien
 import com.example.tugasakhir.ui.navigation.DestinasiNavigasi
+import com.example.tugasakhir.ui.viewmodel.PenyediaViewModel
 
 
 object DestinasiDetailPasien : DestinasiNavigasi {
