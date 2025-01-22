@@ -14,14 +14,14 @@ interface PasienApiService {
     suspend fun getAllPasien(): List<Pasien>
 
     @GET("pasien/detail.php")
-    suspend fun getPasienById(@Query("id") idPasien: String): Pasien
+    suspend fun getPasienById(@Path("id") idPasien: String): Pasien
 
     @POST("pasien/insert.php")
     suspend fun insertPasien(@Body pasien: Pasien)
 
     @PUT("pasien/update.php")
-    suspend fun updatePasien(@Query("id") idPasien: String, @Body pasien: Pasien)
+    suspend fun updatePasien(@Path("id") idPasien: String, @Body pasien: Pasien)
 
     @DELETE("pasien/delete.php")
-    suspend fun deletePasien(@Query("id") idPasien: String): Response<Void>
+    suspend fun deletePasien(@Path("id") idPasien: String): Response<Void>
 }
