@@ -6,18 +6,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tugasakhir.model.Pasien
-import com.example.tugasakhir.ui.viewpasien.DestinasiUpdatePasien
 import kotlinx.coroutines.launch
-import toDetailUiEvent
+import toDetaiPasienlUiEvent
+
 
 class UpdatePasienViewModel(
     savedStateHandle: SavedStateHandle,
-    private val pasienRepository: PasienRepository
+    private val psn: PasienRepository
 ) : ViewModel() {
 
     val idPasien: String = checkNotNull(savedStateHandle[DestinasiUpdatePasien.ID_PASIEN])
 
-    var uiState = mutableStateOf(InsertUiStatePasien())
+    var uiState = mutableStateOf(InsertPasienUiState())
         private set
 
     init {
@@ -27,7 +27,7 @@ class UpdatePasienViewModel(
     private fun ambilPasien() {
         viewModelScope.launch {
             try {
-                val pasien = pasienRepository.getPasienByid(idPasien)
+                val pasien = psn.getPasienByid(idPasien)
                 pasien?.let {
                     uiState.value = it.toInsertUiEventPasien()
                 }
@@ -40,7 +40,7 @@ class UpdatePasienViewModel(
     fun updatePasien(idPasien: String, pasien: Pasien) {
         viewModelScope.launch {
             try {
-                pasienRepository.updatePasien(idPasien, pasien)
+                psn.updatePasien(idPasien, pasien)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -52,6 +52,6 @@ class UpdatePasienViewModel(
     }
 }
 
-fun Pasien.toInsertUiEventPasien(): InsertUiStatePasien = InsertUiStatePasien(
-    insertUiEvent = this.toDetailUiEvent()
+fun Pasien.toInsertUiEventPasien(): InsertPasienUiState = InsertPasienUiState(
+    insertUiEvent = this.toDetaiPasienlUiEvent()
 )
