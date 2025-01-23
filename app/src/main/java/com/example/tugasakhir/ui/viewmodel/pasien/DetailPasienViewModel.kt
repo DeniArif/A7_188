@@ -2,7 +2,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tugasakhir.model.Pasien
-import com.example.tugasakhir.ui.viewpasien.DestinasiDetailPasien
+import com.example.tugasakhir.ui.viewmodel.pasien.InsertUiEventPasien
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -12,9 +12,9 @@ sealed class PasienDetailUiState {
     object Loading : PasienDetailUiState()
 }
 
-class PasienDetailViewModel(
+class DetailPasienViewModel(
     savedStateHandle: SavedStateHandle,
-    private val pasienRepository: PasienRepository
+    private val psn: PasienRepository
 ) : ViewModel() {
 
     private val _idPasien: String = checkNotNull(savedStateHandle[DestinasiDetailPasien.ID_PASIEN])
@@ -32,11 +32,13 @@ class PasienDetailViewModel(
             try {
                 _pasienDetailUiState.value = PasienDetailUiState.Loading
 
-                val pasien = pasienRepository.getPasienByid(_idPasien)
+                val pasien = psn.getPasienByid(_idPasien)
 
-                _pasienDetailUiState.value = if (pasien != null) {
-                    PasienDetailUiState.Success(pasien)
+               if (pasien != null){
+                   //jika data ditemukan "sukses"
+                   _pasienDetailUiState.value = PasienDetailUiState.Success(pasien)
                 } else {
+                    //jika data tidak ditemukan "error"
                     PasienDetailUiState.Error
                 }
             } catch (e: Exception) {
@@ -46,17 +48,8 @@ class PasienDetailViewModel(
     }
 }
 
-// Memindahkan data dari entity ke UI
-data class InsertUiEventPasien(
-    val idPasien: String,
-    val nama: String,
-    val alamat: String,
-    val nomorTelepon: String,
-    val tanggalLahir: String,
-    val riwayatMedikal: String
-)
 
-fun Pasien.toDetailUiEvent(): InsertUiEventPasien {
+fun Pasien.toDetaiPasienlUiEvent(): InsertUiEventPasien {
     return InsertUiEventPasien(
         idPasien = idPasien,
         nama = nama,
