@@ -21,21 +21,25 @@ fun CostumeTopAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     navigateUp: () -> Unit = {},
-    onRefresh: () -> Unit = {}
+    onRefresh: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = { Text(title) },
         actions = {
-            IconButton(onClick = onRefresh) {
-                Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh")
-            }
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "",
+                modifier = Modifier.clickable {
+                    onRefresh()
+                })
+
         },
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
-                    Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
                 }
             }
         }
