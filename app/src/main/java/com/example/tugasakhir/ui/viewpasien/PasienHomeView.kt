@@ -1,112 +1,106 @@
 package com.example.tugasakhir.ui.viewpasien
 
 import CostumeTopAppBar
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import com.example.tugasakhir.ui.navigation.DestinasiNavigasi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tugasakhir.R
 import com.example.tugasakhir.model.Pasien
-import com.example.tugasakhir.ui.navigation.DestinasiNavigasi
 import com.example.tugasakhir.ui.viewmodel.PenyediaViewModel
 import com.example.tugasakhir.ui.viewmodel.pasien.HomePasienUiState
 import com.example.tugasakhir.ui.viewmodel.pasien.HomePasienViewModel
 
-object DestinasiHomePasien : DestinasiNavigasi {
-    override val route = "home_pasien"
-    override val titleRes = "Manajemen Pasien"
+
+object DestinasiHome: DestinasiNavigasi {
+    override val route ="home"
+    override val titleRes = "Daftar Pasien"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePasienScreen(
-    navigateToAddPasien: () -> Unit,
-    navigateToDetailPasien: (String) -> Unit,
+fun HomeScreen(
+    navigateToItemEntry: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDetailClick: (String) -> Unit = {},
     viewModel: HomePasienViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CostumeTopAppBar(
-                title = DestinasiHomePasien.titleRes,
+                title = DestinasiHome.titleRes,
                 canNavigateBack = false,
                 scrollBehavior = scrollBehavior,
-                onRefresh = { viewModel.getPasien() }
+                onRefresh = {
+                    viewModel.getPasien()
+                }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = navigateToAddPasien,
+                onClick = navigateToItemEntry,
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(18.dp)
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Tambah Pasien")
             }
-        }
+        },
     ) { innerPadding ->
-        HomePasienStatus(
-            pasienUiState = viewModel.pasienUiState,
+        HomeStatus(
+            homePasienUiState = viewModel.pasienUiState,
             retryAction = { viewModel.getPasien() },
             modifier = Modifier.padding(innerPadding),
-            onDetailClick = navigateToDetailPasien,
-            onDeleteClick = { pasien -> viewModel.deletePasien(pasien.idPasien) }
+            onDetailClick = onDetailClick,
+            onDeleteClick = {
+                viewModel.deletePasien(it.id_pasien)
+                viewModel.getPasien()
+            }
         )
     }
 }
 
+
 @Composable
-fun HomePasienStatus(
-    pasienUiState: HomePasienUiState,
+fun HomeStatus(
+    homePasienUiState: HomePasienUiState,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     onDeleteClick: (Pasien) -> Unit = {},
     onDetailClick: (String) -> Unit
 ) {
-    when (pasienUiState) {
-        is HomePasienUiState.Loading -> OnLoading(modifier = modifier.fillMaxSize())
+    when (homePasienUiState){
+        is HomePasienUiState.Loading-> OnLoading(modifier = modifier.fillMaxWidth())
+
         is HomePasienUiState.Success ->
-            if (pasienUiState.pasien.isEmpty()) {
-                Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Tidak ada data pasien")
+            if (homePasienUiState.pasien.isEmpty()){
+                return Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    Text(text = "Tidak ada data kontak")
                 }
             } else {
                 PasienLayout(
-                    pasien = pasienUiState.pasien,
-                    modifier = modifier.fillMaxWidth(),
-                    onDetailClick = { onDetailClick(it.idPasien) },
-                    onDeleteClick = { onDeleteClick(it) }
+                    pasienList = homePasienUiState.pasien,modifier = modifier.fillMaxWidth(),
+                    onDeleteClick = {
+                        onDeleteClick(it)
+                    },
+                    onDetailClick = {
+                        onDeleteClick(it)
+                    }
                 )
             }
         is HomePasienUiState.Error -> OnError(retryAction, modifier = modifier.fillMaxSize())
@@ -129,7 +123,8 @@ fun OnError(retryAction: () -> Unit, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = painterResource(id = R.drawable.error), contentDescription = "")
+        Image(painter = painterResource(id = R.drawable.error), contentDescription = ""
+        )
         Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
         Button(onClick = retryAction) {
             Text(stringResource(R.string.retry))
@@ -139,7 +134,7 @@ fun OnError(retryAction: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 fun PasienLayout(
-    pasien: List<Pasien>,
+    pasienList: List<Pasien>,
     modifier: Modifier = Modifier,
     onDetailClick: (Pasien) -> Unit,
     onDeleteClick: (Pasien) -> Unit = {}
@@ -149,7 +144,7 @@ fun PasienLayout(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(pasien) { pasien ->
+        items(pasienList) { pasien ->
             PasienCard(
                 pasien = pasien,
                 modifier = Modifier
@@ -167,7 +162,6 @@ fun PasienCard(
     modifier: Modifier = Modifier,
     onDeleteClick: (Pasien) -> Unit = {}
 ) {
-    // Card container
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -177,7 +171,6 @@ fun PasienCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Row for Name and ID
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -186,39 +179,34 @@ fun PasienCard(
                     text = pasien.nama,
                     style = MaterialTheme.typography.titleLarge
                 )
-                Spacer(Modifier.weight(1f)) // Spacer to push delete button to the right
-
-                // Delete button
+                Spacer(Modifier.weight(1f))
                 IconButton(onClick = { onDeleteClick(pasien) }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete Pasien"
+                        contentDescription = null,
                     )
                 }
-
-                // Display patient ID
                 Text(
-                    text = pasien.idPasien,
+                    text = pasien.id_pasien,
                     style = MaterialTheme.typography.titleMedium
                 )
             }
 
-            // Display additional information about the patient
             Text(
                 text = "Alamat: ${pasien.alamat}",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = "Telepon: ${pasien.nomorTelepon}",
-                style = MaterialTheme.typography.bodyMedium
+                text = "Telepon: ${pasien.nomor_telepon}",
+                style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = "Tanggal Lahir: ${pasien.tanggalLahir}",
-                style = MaterialTheme.typography.bodyMedium
+                text = "Tanggal Lahir: ${pasien.tanggal_lahir}",
+                style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = "Riwayat Medikal: ${pasien.riwayatMedikal}",
-                style = MaterialTheme.typography.bodyMedium
+                text = "Riwayat Medikal: ${pasien.riwayat_medikal}",
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }

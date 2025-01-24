@@ -1,8 +1,10 @@
 package com.example.tugasakhir.container
 
 
-import NetworkMahasiswaRepository
-import PasienRepository
+
+
+import com.example.tugasakhir.repository.NetworkPasienRepository
+import com.example.tugasakhir.repository.PasienRepository
 import com.example.tugasakhir.service.PasienApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -15,7 +17,7 @@ interface AppContainer {
 
 class PasienContainer : AppContainer {
 
-    private val baseUrl = "http://10.0.2.2:80/yourApiPath/" // Ganti dengan base URL Anda
+    private val baseUrl = "http://10.0.2.2:2000/api/"
     private val json = Json { ignoreUnknownKeys = true }
 
     // Menyiapkan Retrofit dengan Converter untuk JSON
@@ -31,6 +33,6 @@ class PasienContainer : AppContainer {
 
     // Menyediakan PasienRepository menggunakan PasienApiService
     override val pasienRepository: PasienRepository by lazy {
-        NetworkMahasiswaRepository(pasienApiService)
+        NetworkPasienRepository(pasienApiService)
     }
 }

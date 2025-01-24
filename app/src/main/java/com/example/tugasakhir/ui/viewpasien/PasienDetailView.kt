@@ -1,7 +1,7 @@
 package com.example.tugasakhir.ui.viewpasien
 
 import CostumeTopAppBar
-import PasienDetailViewModel
+import DetailPasienViewModel
 import PasienDetailUiState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -21,17 +21,17 @@ import com.example.tugasakhir.ui.viewmodel.PenyediaViewModel
 
 
 object DestinasiDetailPasien : DestinasiNavigasi {
-    override val route = "detail_pasien"
-    const val ID_PASIEN = "id_pasien"
-    val routesWithArg = "$route/{$ID_PASIEN}"
-    override val titleRes = "Detail Pasien"
+    override val route = "detail_pasien"//Base Route
+    const val ID_PASIEN = "id_pasien"// Nama parameter untuk id pasien
+    val routesWithArg = "$route/{$ID_PASIEN}"//Route yang menerima id pasien sebagai argumen
+    override val titleRes = "Detail Pasien"//Title untuk halaman ini
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasienDetailView(
     idPasien: String,
     modifier: Modifier = Modifier,
-    viewModel: PasienDetailViewModel = viewModel(factory = PenyediaViewModel.Factory),
+    viewModel: DetailPasienViewModel = viewModel(factory = PenyediaViewModel.Factory),
     onEditClick: (String) -> Unit = {},
     navigateBack: () -> Unit,
 ) {
@@ -93,6 +93,8 @@ fun BodyDetailPasien(
             )
         }
         else -> {
+            // Menangani kasus yang tidak terduga (optional, jika ingin menangani hal ini)
+            // Bisa menambahkan logika untuk menangani kesalahan yang tidak diketahui
             Text("Unexpected state encountered")
         }
     }
@@ -108,17 +110,17 @@ fun ItemDetailPasien(pasien: Pasien) {
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            ComponentDetailPasien(judul = "ID Pasien", isinya = pasien.idPasien.toString())
+            ComponentDetailPasien(judul = "ID Pasien", isinya = pasien.id_pasien.toString())
             Spacer(modifier = Modifier.padding(4.dp))
             ComponentDetailPasien(judul = "Nama", isinya = pasien.nama)
             Spacer(modifier = Modifier.padding(4.dp))
             ComponentDetailPasien(judul = "Alamat", isinya = pasien.alamat)
             Spacer(modifier = Modifier.padding(4.dp))
-            ComponentDetailPasien(judul = "Nomor Telepon", isinya = pasien.nomorTelepon)
+            ComponentDetailPasien(judul = "Nomor Telepon", isinya = pasien.nomor_telepon)
             Spacer(modifier = Modifier.padding(4.dp))
-            ComponentDetailPasien(judul = "Tanggal Lahir", isinya = pasien.tanggalLahir)
+            ComponentDetailPasien(judul = "Tanggal Lahir", isinya = pasien.tanggal_lahir)
             Spacer(modifier = Modifier.padding(4.dp))
-            ComponentDetailPasien(judul = "Riwayat Medikal", isinya = pasien.riwayatMedikal)
+            ComponentDetailPasien(judul = "Riwayat Medikal", isinya = pasien.riwayat_medikal)
         }
     }
 }

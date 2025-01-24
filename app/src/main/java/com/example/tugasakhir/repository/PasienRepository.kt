@@ -1,53 +1,48 @@
+package com.example.tugasakhir.repository
 
+import com.example.tugasakhir.model.AllPasienResponse
 import com.example.tugasakhir.model.Pasien
+import com.example.tugasakhir.model.PasienDetailResponse
 import com.example.tugasakhir.service.PasienApiService
-import okio.IOException
+import java.io.IOException
 
-interface PasienRepository{
-    suspend fun  getPasien():List<Pasien>
-
+interface PasienRepository {
+    suspend fun getAllPasien(): AllPasienResponse
     suspend fun insertPasien(pasien: Pasien)
-
-    suspend fun updatePasien(idpasien: String,pasien: Pasien)
-
-    suspend fun deletePasien(idpasien: String)
-
-    suspend fun getPasienByid(idpasien: String):Pasien
+    suspend fun updatePasien(id_pasien: String, pasien: Pasien)
+    suspend fun deletePasien(id_pasien: String)
+    suspend fun getPasienById(id_pasien: String): PasienDetailResponse
 }
 
-class NetworkMahasiswaRepository(
+class NetworkPasienRepository(
     private val pasienApiService: PasienApiService
 ) : PasienRepository {
-    override suspend fun getPasien(): List<Pasien> =
+
+    override suspend fun getAllPasien(): AllPasienResponse =
         pasienApiService.getAllPasien()
 
     override suspend fun insertPasien(pasien: Pasien) {
         pasienApiService.insertPasien(pasien)
     }
 
-    override suspend fun updatePasien(idpasien: String, pasien: Pasien) {
-        pasienApiService.updatePasien(idpasien, pasien)
+    override suspend fun updatePasien(id_pasien: String, pasien: Pasien) {
+        pasienApiService.updatePasien(id_pasien, pasien)
     }
 
-    override suspend fun deletePasien(idPasien: String) {
+    override suspend fun deletePasien(id_pasien: String) {
         try {
-            val response = pasienApiService.deletePasien(idPasien)
+            val response = pasienApiService.deletePasien(id_pasien)
             if (!response.isSuccessful) {
-                throw IOException(
-                    "Failed to delete Pasien. HTTP Status Code: ${response.code()}"
-                )
-            }else   {
+                throw IOException("Failed to delete Pasien. HTTP Status Code: ${response.code()}")
+            } else {
                 println(response.message())
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             throw e
         }
     }
 
-    override suspend fun getPasienByid(idpasien: String): Pasien {
-        return pasienApiService.getPasienById(idpasien)
+    override suspend fun getPasienById(id_pasien: String): PasienDetailResponse {
+        return pasienApiService.getPasienById(id_pasien)
     }
-
-
-
 }

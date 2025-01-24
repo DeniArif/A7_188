@@ -1,13 +1,18 @@
+package com.example.tugasakhir.ui.viewmodel.pasien
+
+
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tugasakhir.model.Pasien
-import com.example.tugasakhir.ui.viewmodel.pasien.InsertUiEventPasien
+import com.example.tugasakhir.model.PasienDetailResponse
+import com.example.tugasakhir.repository.PasienRepository
+import com.example.tugasakhir.ui.viewpasien.DestinasiDetailPasien
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 sealed class PasienDetailUiState {
-    data class Success(val pasien: Pasien) : PasienDetailUiState()
+    data class Success(val pasien: PasienDetailResponse) : PasienDetailUiState()
     object Error : PasienDetailUiState()
     object Loading : PasienDetailUiState()
 }
@@ -32,7 +37,7 @@ class DetailPasienViewModel(
             try {
                 _pasienDetailUiState.value = PasienDetailUiState.Loading
 
-                val pasien = psn.getPasienByid(_idPasien)
+                val pasien = psn.getPasienById(_idPasien)
 
                if (pasien != null){
                    //jika data ditemukan "sukses"
@@ -48,14 +53,14 @@ class DetailPasienViewModel(
     }
 }
 
-
-fun Pasien.toDetaiPasienlUiEvent(): InsertUiEventPasien {
+//Memindahkan data dari entity ke ui
+fun Pasien.toDetailPasienUiEvent() : InsertUiEventPasien {
     return InsertUiEventPasien(
-        idPasien = idPasien,
+        id_pasien = id_pasien,
         nama = nama,
         alamat = alamat,
-        nomorTelepon = nomorTelepon,
-        tanggalLahir = tanggalLahir,
-        riwayatMedikal = riwayatMedikal
+        nomor_telepon = nomor_telepon,
+        tanggal_lahir = tanggal_lahir,
+        riwayat_medikal = riwayat_medikal
     )
 }

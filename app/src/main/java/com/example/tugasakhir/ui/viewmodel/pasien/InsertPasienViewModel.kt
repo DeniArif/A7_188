@@ -1,25 +1,26 @@
 package com.example.tugasakhir.ui.viewmodel.pasien
 
-import PasienRepository
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tugasakhir.model.Pasien
+import com.example.tugasakhir.repository.PasienRepository
 import kotlinx.coroutines.launch
 
-class InsertPasienViewModel(private val pasienRepository: PasienRepository) : ViewModel() {
+class InsertPasienViewModel(private val psn: PasienRepository) : ViewModel() {
     var uiState by mutableStateOf(InsertPasienUiState())
 
     fun updateInsertPasienState(insertUiEvent: InsertUiEventPasien) {
         uiState = InsertPasienUiState(insertUiEvent = insertUiEvent)
     }
 
-    fun insertPasien() {
+    suspend fun insertPasien() {
         viewModelScope.launch {
             try {
-                pasienRepository.insertPasien(uiState.insertUiEvent.toPasien())
+                psn.insertPasien(uiState.insertUiEvent.toPasien())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -32,28 +33,28 @@ data class InsertPasienUiState(
 )
 
 data class InsertUiEventPasien(
-    val idPasien: String = "",
+    val id_pasien: String = "",
     val nama: String = "",
     val alamat: String = "",
-    val nomorTelepon: String = "",
-    val tanggalLahir: String = "",
-    val riwayatMedikal: String = ""
+    val nomor_telepon: String = "",
+    val tanggal_lahir: String = "",
+    val riwayat_medikal: String = ""
 )
 
 fun InsertUiEventPasien.toPasien(): Pasien = Pasien(
-    idPasien = idPasien,
+    id_pasien = id_pasien,
     nama = nama,
     alamat = alamat,
-    nomorTelepon = nomorTelepon,
-    tanggalLahir = tanggalLahir,
-    riwayatMedikal = riwayatMedikal
+    nomor_telepon = nomor_telepon,
+    tanggal_lahir = tanggal_lahir,
+    riwayat_medikal = riwayat_medikal
 )
 
 fun Pasien.toInsertUiEvent(): InsertUiEventPasien = InsertUiEventPasien(
-    idPasien = idPasien,
+    id_pasien = id_pasien,
     nama = nama,
     alamat = alamat,
-    nomorTelepon = nomorTelepon,
-    tanggalLahir = tanggalLahir,
-    riwayatMedikal = riwayatMedikal
+    nomor_telepon = nomor_telepon,
+    tanggal_lahir = tanggal_lahir,
+    riwayat_medikal = riwayat_medikal
 )

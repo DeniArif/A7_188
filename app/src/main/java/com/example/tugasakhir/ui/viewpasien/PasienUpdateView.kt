@@ -14,22 +14,24 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tugasakhir.ui.navigation.DestinasiNavigasi
+import com.example.tugasakhir.ui.viewmodel.PenyediaViewModel
 import com.example.tugasakhir.ui.viewmodel.pasien.UpdatePasienViewModel
+import com.example.tugasakhir.ui.viewmodel.pasien.toPasien
 import kotlinx.coroutines.launch
 
 object DestinasiUpdatePasien : DestinasiNavigasi {
-    override val route = "update_pasien"
-    const val ID_PASIEN = "id_pasien"
+    override val route = "updatepasien"
+    const val ID_PASIEN = "idpasien"
     val routesWithArg = "$route/{$ID_PASIEN}"
     override val titleRes = "Update Pasien"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpdatePasienView(
+fun PasienUpdateView(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: UpdatePasienViewModel = viewModel()
+    viewModel: UpdatePasienViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -61,12 +63,12 @@ fun UpdatePasienView(
                     viewModel.updatePasienState(updatedValue) // Update ViewModel state with new data
                 },
                 onSaveClick = {
-                    uiState.insertUiEvent?.let { insertUiEvent ->
+                    uiState.insertUiEvent?.let { insertUiEventPasien ->
                         coroutineScope.launch {
                             // Call ViewModel update method with updated Pasien
                             viewModel.updatePasien(
                                 idPasien = viewModel.idPasien, // Pass the patient ID from ViewModel
-                                pasien = insertUiEvent.toPasien() // Convert InsertUiEvent to Pasien
+                                pasien = insertUiEventPasien.toPasien() // Convert InsertUiEvent to Pasien
                             )
                             navigateBack() // Navigate back after saving changes
                         }

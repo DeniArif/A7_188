@@ -21,11 +21,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tugasakhir.ui.navigation.DestinasiNavigasi
 import com.example.tugasakhir.ui.viewmodel.PenyediaViewModel
 import com.example.tugasakhir.ui.viewmodel.pasien.InsertPasienUiState
 import com.example.tugasakhir.ui.viewmodel.pasien.InsertPasienViewModel
 import com.example.tugasakhir.ui.viewmodel.pasien.InsertUiEventPasien
 import kotlinx.coroutines.launch
+
+object DestinasiEntry: DestinasiNavigasi {
+    override val route = "item_entry"
+    override val titleRes = "Entry Pasien"
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +48,7 @@ fun EntryPasienScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CostumeTopAppBar(
-                title = "Entry Pasien",
+                title = DestinasiEntry.titleRes,
                 canNavigateBack = true,
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack
@@ -110,6 +118,14 @@ fun FormInput(
             enabled = enabled,
             singleLine = true
         )
+        OutlinedTextField(
+            value = insertUiEvent.id_pasien,
+            onValueChange = { onValueChange(insertUiEvent.copy(id_pasien = it)) },
+            label = { Text("Id Pasien") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true
+        )
 
         OutlinedTextField(
             value = insertUiEvent.alamat,
@@ -121,8 +137,8 @@ fun FormInput(
         )
 
         OutlinedTextField(
-            value = insertUiEvent.nomorTelepon,
-            onValueChange = { onValueChange(insertUiEvent.copy(nomorTelepon = it)) },
+            value = insertUiEvent.nomor_telepon,
+            onValueChange = { onValueChange(insertUiEvent.copy(nomor_telepon = it)) },
             label = { Text("Nomor Telepon") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
@@ -130,8 +146,8 @@ fun FormInput(
         )
 
         OutlinedTextField(
-            value = insertUiEvent.tanggalLahir,
-            onValueChange = { onValueChange(insertUiEvent.copy(tanggalLahir = it)) },
+            value = insertUiEvent.tanggal_lahir,
+            onValueChange = { onValueChange(insertUiEvent.copy(tanggal_lahir = it)) },
             label = { Text("Tanggal Lahir") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
@@ -139,8 +155,8 @@ fun FormInput(
         )
 
         OutlinedTextField(
-            value = insertUiEvent.riwayatMedikal,
-            onValueChange = { onValueChange(insertUiEvent.copy(riwayatMedikal = it)) },
+            value = insertUiEvent.riwayat_medikal,
+            onValueChange = { onValueChange(insertUiEvent.copy(riwayat_medikal = it)) },
             label = { Text("Riwayat Medikal") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
