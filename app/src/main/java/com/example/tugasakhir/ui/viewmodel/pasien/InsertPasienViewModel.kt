@@ -14,13 +14,13 @@ class InsertPasienViewModel(private val psn: PasienRepository) : ViewModel() {
     var uiState by mutableStateOf(InsertPasienUiState())
 
     fun updateInsertPasienState(insertUiEvent: InsertUiEventPasien) {
-        uiState = InsertPasienUiState(insertUiEvent = insertUiEvent)
+        uiState = InsertPasienUiState(insertUiEventPasien = insertUiEvent)
     }
 
     suspend fun insertPasien() {
         viewModelScope.launch {
             try {
-                psn.insertPasien(uiState.insertUiEvent.toPasien())
+                psn.insertPasien(uiState.insertUiEventPasien.toPasien())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -29,7 +29,7 @@ class InsertPasienViewModel(private val psn: PasienRepository) : ViewModel() {
 }
 
 data class InsertPasienUiState(
-    val insertUiEvent: InsertUiEventPasien = InsertUiEventPasien()
+    val insertUiEventPasien: InsertUiEventPasien = InsertUiEventPasien()
 )
 
 data class InsertUiEventPasien(
@@ -50,11 +50,4 @@ fun InsertUiEventPasien.toPasien(): Pasien = Pasien(
     riwayat_medikal = riwayat_medikal
 )
 
-fun Pasien.toInsertUiEvent(): InsertUiEventPasien = InsertUiEventPasien(
-    id_pasien = id_pasien,
-    nama = nama,
-    alamat = alamat,
-    nomor_telepon = nomor_telepon,
-    tanggal_lahir = tanggal_lahir,
-    riwayat_medikal = riwayat_medikal
-)
+
