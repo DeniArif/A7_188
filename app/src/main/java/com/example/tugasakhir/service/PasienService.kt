@@ -12,18 +12,18 @@ interface PasienApiService {
         "Accept: application/json",
         "Content-Type: application/json",
     )
-    @GET(".")
+    @GET("pasien")
     suspend fun getAllPasien(): AllPasienResponse
 
-    @GET("{id_pasien}")
-    suspend fun getPasienById(@Path("id_pasien") id_pasien: String): PasienDetailResponse
+    @GET("pasien/{id_pasien}")
+    suspend fun getPasienById(@Path("id_pasien") id_pasien: Int): PasienDetailResponse
 
-    @POST("insertpasien.php")
-    suspend fun insertPasien(@Body pasien: Pasien)
+    @POST("pasien/store")
+    suspend fun insertPasien(@Body pasien: Pasien): Response<Pasien>
 
-    @PUT("editpasien.php/{id_pasien")
-    suspend fun updatePasien(@Path("id_pasien") id_pasien: String, @Body pasien: Pasien)
+    @PUT("pasien/{id_pasien}")
+    suspend fun updatePasien(@Path("id_pasien") id_pasien: Int, @Body pasien: Pasien)
 
-    @DELETE("deletepasien.php/{id_pasien}")
-    suspend fun deletePasien(@Path("id_pasien") id_pasien: String): retrofit2.Response<Void>
+    @DELETE("pasien/{id_pasien}")
+    suspend fun deletePasien(@Path("id_pasien") id_pasien: Int): Response<Void>
 }
