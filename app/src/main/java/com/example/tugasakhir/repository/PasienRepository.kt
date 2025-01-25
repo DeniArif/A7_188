@@ -9,9 +9,9 @@ import java.io.IOException
 interface PasienRepository {
     suspend fun getAllPasien(): AllPasienResponse
     suspend fun insertPasien(pasien: Pasien)
-    suspend fun updatePasien(id_pasien: String, pasien: Pasien)
-    suspend fun deletePasien(id_pasien: String)
-    suspend fun getPasienById(id_pasien: String): PasienDetailResponse
+    suspend fun updatePasien(id_pasien: Int, pasien: Pasien)
+    suspend fun deletePasien(id_pasien: Int)
+    suspend fun getPasienById(id_pasien: Int): Pasien
 }
 
 class NetworkPasienRepository(
@@ -25,11 +25,11 @@ class NetworkPasienRepository(
         pasienApiService.insertPasien(pasien)
     }
 
-    override suspend fun updatePasien(id_pasien: String, pasien: Pasien) {
+    override suspend fun updatePasien(id_pasien: Int, pasien: Pasien) {
         pasienApiService.updatePasien(id_pasien, pasien)
     }
 
-    override suspend fun deletePasien(id_pasien: String) {
+    override suspend fun deletePasien(id_pasien: Int) {
         try {
             val response = pasienApiService.deletePasien(id_pasien)
             if (!response.isSuccessful) {
@@ -42,7 +42,7 @@ class NetworkPasienRepository(
         }
     }
 
-    override suspend fun getPasienById(id_pasien: String): PasienDetailResponse {
-        return pasienApiService.getPasienById(id_pasien)
+    override suspend fun getPasienById(id_pasien: Int): Pasien {
+        return pasienApiService.getPasienById(id_pasien).data
     }
 }
