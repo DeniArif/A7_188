@@ -15,13 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tugasakhir.ui.navigation.DestinasiNavigasi
 import com.example.tugasakhir.ui.viewmodel.PenyediaViewModel
-import com.example.tugasakhir.ui.viewmodel.pasien.UpdatePasienViewModel
+import com.example.tugasakhir.ui.viewmodel.pasien.UpdatePsnViewModel
 import com.example.tugasakhir.ui.viewmodel.pasien.toPasien
 import kotlinx.coroutines.launch
 
-object DestinasiUpdatePasien : DestinasiNavigasi {
-    override val route = "updatepasien"
-    const val ID_PASIEN = "idpasien"
+object DestinasiUpdatePsn : DestinasiNavigasi {
+    override val route = "update"
+    const val ID_PASIEN = "id_pasien"
     val routesWithArg = "$route/{$ID_PASIEN}"
     override val titleRes = "Update Pasien"
 }
@@ -30,20 +30,21 @@ object DestinasiUpdatePasien : DestinasiNavigasi {
 @Composable
 fun PasienUpdateView(
     navigateBack: () -> Unit,
+    id_pasien: String,
     modifier: Modifier = Modifier,
-    viewModel: UpdatePasienViewModel = viewModel(factory = PenyediaViewModel.Factory)
+    viewModel: UpdatePsnViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     // Collect the UI state from the ViewModel
-    val uiState = viewModel.uiState.value
+    val uiState = viewModel.PsnuiState.value
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CostumeTopAppBar(
-                title = DestinasiUpdatePasien.titleRes,
+                title = DestinasiUpdatePsn.titleRes,
                 canNavigateBack = true,
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack
@@ -58,16 +59,16 @@ fun PasienUpdateView(
         ) {
             // Pass the UI state to EntryBody to handle form input
             EntryBody(
-                insertUiState = uiState,
+                insertUiState = uiState, // Sebelumnya salah referensi
                 onPasienValueChange = { updatedValue ->
-                    viewModel.updatePasienState(updatedValue) // Update ViewModel state with new data
+                    viewModel.updatePsnState(updatedValue) // Update ViewModel state with new data
                 },
                 onSaveClick = {
-                    uiState.insertUiEvent?.let { insertUiEventPasien ->
+                    uiState.insertPsnUiEvent?.let { insertUiEventPasien -> // Sebelumnya salah penulisan
                         coroutineScope.launch {
                             // Call ViewModel update method with updated Pasien
-                            viewModel.updatePasien(
-                                idPasien = viewModel.idPasien, // Pass the patient ID from ViewModel
+                            viewModel.updatePsn(
+                                id_pasien = viewModel.id_pasien, // Pass the patient ID from ViewModel
                                 pasien = insertUiEventPasien.toPasien() // Convert InsertUiEvent to Pasien
                             )
                             navigateBack() // Navigate back after saving changes
