@@ -1,23 +1,25 @@
 package com.example.tugasakhir.ui.viewmodel.pasien
 
-import PasienRepository
+import com.example.tugasakhir.repository.PasienRepository
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tugasakhir.model.Pasien
+import com.example.tugasakhir.ui.viewpasien.DestinasiUpdatePsn
 import kotlinx.coroutines.launch
-import toDetaiPasienlUiEvent
 
 
-class UpdatePasienViewModel(
+
+
+class UpdatePsnViewModel(
     savedStateHandle: SavedStateHandle,
     private val psn: PasienRepository
 ) : ViewModel() {
 
-    val idPasien: String = checkNotNull(savedStateHandle[DestinasiUpdatePasien.ID_PASIEN])
+    val id_pasien: Int = checkNotNull(savedStateHandle[DestinasiUpdatePsn.ID_PASIEN])
 
-    var uiState = mutableStateOf(InsertPasienUiState())
+    var PsnuiState = mutableStateOf(InsertPsnUiState())
         private set
 
     init {
@@ -27,9 +29,10 @@ class UpdatePasienViewModel(
     private fun ambilPasien() {
         viewModelScope.launch {
             try {
-                val pasien = psn.getPasienByid(idPasien)
+                val pasien = psn.getPasienById(id_pasien)
                 pasien?.let {
-                    uiState.value = it.toInsertUiEventPasien()
+                    // Pastikan memanggil toInsertUiEventPasien() di sini
+                    PsnuiState.value = it.toInserPsntUiEvent()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -37,21 +40,22 @@ class UpdatePasienViewModel(
         }
     }
 
-    fun updatePasien(idPasien: String, pasien: Pasien) {
+
+    fun updatePsn(id_pasien: Int, pasien: Pasien) {
         viewModelScope.launch {
             try {
-                psn.updatePasien(idPasien, pasien)
+                psn.updatePasien(id_pasien, pasien)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    fun updatePasienState(insertUiEvent: InsertUiEventPasien) {
-        uiState.value = uiState.value.copy(insertUiEvent = insertUiEvent)
+    fun updatePsnState(insertPsnUiEvent: InsertPsnUiEvent) {
+        PsnuiState.value = PsnuiState.value.copy(insertPsnUiEvent = insertPsnUiEvent)
     }
 }
 
-fun Pasien.toInsertUiEventPasien(): InsertPasienUiState = InsertPasienUiState(
-    insertUiEvent = this.toDetaiPasienlUiEvent()
+fun Pasien.toInserPsntUiEvent(): InsertPsnUiState = InsertPsnUiState(
+    insertPsnUiEvent = this.toDetailPsnUiEvent()
 )
