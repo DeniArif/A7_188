@@ -10,15 +10,14 @@ import com.example.tugasakhir.repository.PasienRepository
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-
 sealed class HomePsnUiState {
     data class Success(val pasien: List<Pasien>) : HomePsnUiState()
     object Error : HomePsnUiState()
     object Loading : HomePsnUiState()
 }
 
-class HomePasienViewModel(private val pasienRepository: PasienRepository): ViewModel(){
-    var psnUiState:HomePsnUiState by mutableStateOf(HomePsnUiState.Loading)
+class HomePasienViewModel(private val pasienRepository: PasienRepository) : ViewModel() {
+    var psnUiState: HomePsnUiState by mutableStateOf(HomePsnUiState.Loading)
         private set
 
     init {
@@ -28,26 +27,25 @@ class HomePasienViewModel(private val pasienRepository: PasienRepository): ViewM
     fun getPsn() {
         viewModelScope.launch {
             psnUiState = HomePsnUiState.Loading
-            psnUiState = try {
+            try {
                 val response = pasienRepository.getAllPasien()
-                HomePsnUiState.Success(response.data)
-            } catch ( e: IOException) {
-                HomePsnUiState.Error
-            } catch (e:IOException) {
-                HomePsnUiState.Error
+                psnUiState = HomePsnUiState.Success(response.data)
+            } catch (e: IOException) {
+                psnUiState = HomePsnUiState.Error
+                e.printStackTrace() // Log exception to help debugging
             }
         }
     }
 
-    fun deletePsn(id_pasien : String){
+    fun deletePsn(id_pasien: Int) {
         viewModelScope.launch {
             try {
                 pasienRepository.deletePasien(id_pasien)
-            } catch (e: IOException){
+            } catch (e: IOException) {
                 psnUiState = HomePsnUiState.Error
-            } catch (e: IOException){
-                psnUiState = HomePsnUiState.Error
+                e.printStackTrace() // Log exception to help debugging
             }
         }
     }
 }
+
