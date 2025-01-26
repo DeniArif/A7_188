@@ -1,6 +1,5 @@
 package com.example.tugasakhir.ui.viewmodel.pasien
 
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,17 +9,20 @@ import com.example.tugasakhir.model.Pasien
 import com.example.tugasakhir.repository.PasienRepository
 import kotlinx.coroutines.launch
 
-class InsertPasienViewModel(private val psn: PasienRepository) : ViewModel() {
-    var uiState by mutableStateOf(InsertPasienUiState())
+class InsertPsnViewModel(
+    private val psn: PasienRepository
+) : ViewModel() {
 
-    fun updateInsertPasienState(insertUiEvent: InsertUiEventPasien) {
-        uiState = InsertPasienUiState(insertUiEventPasien = insertUiEvent)
+    var PsnuiState by mutableStateOf(InsertPsnUiState())
+
+    fun updateInsertPsnState(insertPsnUiEvent: InsertPsnUiEvent) {
+        PsnuiState = InsertPsnUiState(insertPsnUiEvent = insertPsnUiEvent)
     }
 
-    suspend fun insertPasien() {
+    fun insertPsn() {  // Tidak perlu `suspend`, karena sudah menggunakan `viewModelScope.launch`
         viewModelScope.launch {
             try {
-                psn.insertPasien(uiState.insertUiEventPasien.toPasien())
+                psn.insertPasien(PsnuiState.insertPsnUiEvent.toPasien())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -28,12 +30,12 @@ class InsertPasienViewModel(private val psn: PasienRepository) : ViewModel() {
     }
 }
 
-data class InsertPasienUiState(
-    val insertUiEventPasien: InsertUiEventPasien = InsertUiEventPasien()
+data class InsertPsnUiState(
+    val insertPsnUiEvent: InsertPsnUiEvent = InsertPsnUiEvent()
 )
 
-data class InsertUiEventPasien(
-    val id_pasien: String = "",
+data class InsertPsnUiEvent(
+    val id_pasien: Int = 0,
     val nama: String = "",
     val alamat: String = "",
     val nomor_telepon: String = "",
@@ -41,7 +43,7 @@ data class InsertUiEventPasien(
     val riwayat_medikal: String = ""
 )
 
-fun InsertUiEventPasien.toPasien(): Pasien = Pasien(
+fun InsertPsnUiEvent.toPasien(): Pasien = Pasien(
     id_pasien = id_pasien,
     nama = nama,
     alamat = alamat,
@@ -49,5 +51,3 @@ fun InsertUiEventPasien.toPasien(): Pasien = Pasien(
     tanggal_lahir = tanggal_lahir,
     riwayat_medikal = riwayat_medikal
 )
-
-
