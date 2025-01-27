@@ -12,7 +12,7 @@ interface PasienApiService {
         "Accept: application/json",
         "Content-Type: application/json",
     )
-    @GET("pasien")
+    @GET("pasien/")
     suspend fun getAllPasien(): AllPasienResponse
 
     @GET("pasien/{id_pasien}")
@@ -21,7 +21,7 @@ interface PasienApiService {
     @POST("pasien/store")
     suspend fun insertPasien(@Body pasien: Pasien): Response<Pasien>
 
-    @PUT("pasien/{id_pasien}")
+    @PUT("pasien/updatepasien/{id_pasien}")
     suspend fun updatePasien(@Path("id_pasien") id_pasien: Int, @Body pasien: Pasien)
 
     @DELETE("pasien/{id_pasien}")
