@@ -1,8 +1,6 @@
-package com.example.tugasakhir.ui.viewpasien
+package com.example.tugasakhir.ui.view.pasien
 
 import CostumeTopAppBar
-import DetailPasienViewModel
-import PasienDetailUiState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -18,21 +16,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tugasakhir.model.Pasien
 import com.example.tugasakhir.ui.navigation.DestinasiNavigasi
 import com.example.tugasakhir.ui.viewmodel.PenyediaViewModel
-
+import com.example.tugasakhir.ui.viewmodel.pasien.DetailPasienViewModel
+import com.example.tugasakhir.ui.viewmodel.pasien.DetailPsnUiState
 
 object DestinasiDetailPasien : DestinasiNavigasi {
-    override val route = "detail_pasien"//Base Route
-    const val ID_PASIEN = "id_pasien"// Nama parameter untuk id pasien
-    val routesWithArg = "$route/{$ID_PASIEN}"//Route yang menerima id pasien sebagai argumen
-    override val titleRes = "Detail Pasien"//Title untuk halaman ini
+    override val route = "detailpasien"
+    const val ID_PASIEN = "id_pasien"
+    val routesWithArg = "$route/{$ID_PASIEN}"
+    override val titleRes = "Detail Pasien"
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasienDetailView(
-    idPasien: String,
+    id_pasien: Int,
     modifier: Modifier = Modifier,
     viewModel: DetailPasienViewModel = viewModel(factory = PenyediaViewModel.Factory),
-    onEditClick: (String) -> Unit = {},
+    onEditClick: (Int) -> Unit = {},
     navigateBack: () -> Unit,
 ) {
     Scaffold(
@@ -41,12 +41,12 @@ fun PasienDetailView(
                 title = DestinasiDetailPasien.titleRes,
                 canNavigateBack = true,
                 navigateUp = navigateBack,
-                onRefresh = { viewModel.getDetailPasien() }
+                onRefresh = { viewModel.getDetailPasien() }  // Pastikan ID Pasien diberikan
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onEditClick(idPasien) },
+                onClick = { onEditClick(id_pasien) },  // Menggunakan ID pasien yang diberikan
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(16.dp)
             ) {
@@ -57,48 +57,41 @@ fun PasienDetailView(
             }
         }
     ) { innerPadding ->
-        val detailUiState by viewModel.pasienDetailUiState.collectAsState()
+        val detailPasienUiState by viewModel.pasienDetailUiState.collectAsState()
 
         BodyDetailPasien(
             modifier = Modifier.padding(innerPadding),
-            detailUiState = detailUiState,
-            retryAction = { viewModel.getDetailPasien() }
+            detailPsnUiState = detailPasienUiState,
+            retryAction = { viewModel.getDetailPasien() }  // Pastikan ID pasien diteruskan saat mencoba ulang
         )
     }
 }
 
+
 @Composable
 fun BodyDetailPasien(
     modifier: Modifier = Modifier,
-    detailUiState: PasienDetailUiState,
+    detailPsnUiState: DetailPsnUiState,
     retryAction: () -> Unit = {}
 ) {
-    when (detailUiState) {
-        is PasienDetailUiState.Loading -> {
+    when (detailPsnUiState) {
+        is DetailPsnUiState.Loading -> {
             OnLoading(modifier = modifier.fillMaxSize())
         }
-        is PasienDetailUiState.Success -> {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                ItemDetailPasien(pasien = detailUiState.pasien)
+        is DetailPsnUiState.Success -> {
+            Column(modifier = modifier.fillMaxWidth().padding(16.dp)) {
+                ItemDetailPasien(pasien = detailPsnUiState.pasien)
             }
         }
-        is PasienDetailUiState.Error -> {
-            OnError(
-                retryAction = retryAction,
-                modifier = modifier.fillMaxSize()
-            )
+        is DetailPsnUiState.Error -> {
+            OnError(retryAction = retryAction, modifier = modifier.fillMaxSize())
         }
         else -> {
-            // Menangani kasus yang tidak terduga (optional, jika ingin menangani hal ini)
-            // Bisa menambahkan logika untuk menangani kesalahan yang tidak diketahui
             Text("Unexpected state encountered")
         }
     }
 }
+
 
 @Composable
 fun ItemDetailPasien(pasien: Pasien) {
@@ -110,7 +103,7 @@ fun ItemDetailPasien(pasien: Pasien) {
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            ComponentDetailPasien(judul = "ID Pasien", isinya = pasien.id_pasien.toString())
+            ComponentDetailPasien(judul = "ID Pasien", isinya = pasien.id_pasien.toString()) // id_pasien diubah menjadi String
             Spacer(modifier = Modifier.padding(4.dp))
             ComponentDetailPasien(judul = "Nama", isinya = pasien.nama)
             Spacer(modifier = Modifier.padding(4.dp))
@@ -124,6 +117,7 @@ fun ItemDetailPasien(pasien: Pasien) {
         }
     }
 }
+
 
 @Composable
 fun ComponentDetailPasien(
