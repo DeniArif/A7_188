@@ -3,7 +3,7 @@ package com.example.tugasakhir
 
 import android.app.Application
 import com.example.tugasakhir.container.AppContainer
-import com.example.tugasakhir.container.PasienContainer
+import com.example.tugasakhir.container.RumahSakitContainer
 
 class RumahSakitApplication : Application() {
     // Deklarasi AppContainer agar bisa diakses di seluruh aplikasi
@@ -12,6 +12,7 @@ class RumahSakitApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         // Inisialisasi container dengan PasienContainer
-        container = PasienContainer()
+        container = RumahSakitContainer()
     }
 }
+
