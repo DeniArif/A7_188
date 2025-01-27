@@ -1,55 +1,65 @@
-package com.example.tugasakhir.ui.viewpasien
+package com.example.tugasakhir.ui.view.pasien
 
 import CostumeTopAppBar
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.example.tugasakhir.ui.navigation.DestinasiNavigasi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tugasakhir.R
 import com.example.tugasakhir.model.Pasien
 import com.example.tugasakhir.ui.viewmodel.PenyediaViewModel
-import com.example.tugasakhir.ui.viewmodel.pasien.HomePasienUiState
+import com.example.tugasakhir.ui.viewmodel.pasien.HomePsnUiState
 import com.example.tugasakhir.ui.viewmodel.pasien.HomePasienViewModel
 
-
-object DestinasiHome: DestinasiNavigasi {
-    override val route ="home"
-    override val titleRes = "Daftar Pasien"
+object DestinasiHomePsn : DestinasiNavigasi {
+    override val route = "home_pasien"
+    override val titleRes = "Home Daftar Pasien"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun HomePsnScreen(
     navigateToItemEntry: () -> Unit,
     modifier: Modifier = Modifier,
-    onDetailClick: (String) -> Unit = {},
+    onDetailClick: (Int) -> Unit = {},  // Change to accept Int instead of String
     viewModel: HomePasienViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CostumeTopAppBar(
-                title = DestinasiHome.titleRes,
+                title = DestinasiHomePsn.titleRes,
                 canNavigateBack = false,
                 scrollBehavior = scrollBehavior,
-                onRefresh = {
-                    viewModel.getPasien()
-                }
+                onRefresh = { viewModel.getPsn() }
             )
         },
         floatingActionButton = {
@@ -60,16 +70,16 @@ fun HomeScreen(
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Tambah Pasien")
             }
-        },
+        }
     ) { innerPadding ->
-        HomeStatus(
-            homePasienUiState = viewModel.pasienUiState,
-            retryAction = { viewModel.getPasien() },
+        HomePsnStatus(
+            homePasienUiState = viewModel.psnUiState,
+            retryAction = { viewModel.getPsn() },
             modifier = Modifier.padding(innerPadding),
-            onDetailClick = onDetailClick,
+            onDetailClick = onDetailClick,  // Ensure onDetailClick is accepting Int
             onDeleteClick = {
-                viewModel.deletePasien(it.id_pasien)
-                viewModel.getPasien()
+                viewModel.deletePsn(it.id_pasien)
+                viewModel.getPsn()
             }
         )
     }
@@ -77,35 +87,35 @@ fun HomeScreen(
 
 
 @Composable
-fun HomeStatus(
-    homePasienUiState: HomePasienUiState,
+fun HomePsnStatus(
+    homePasienUiState: HomePsnUiState,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     onDeleteClick: (Pasien) -> Unit = {},
-    onDetailClick: (String) -> Unit
+    onDetailClick: (Int) -> Unit  // Expecting Int here
 ) {
-    when (homePasienUiState){
-        is HomePasienUiState.Loading-> OnLoading(modifier = modifier.fillMaxWidth())
-
-        is HomePasienUiState.Success ->
-            if (homePasienUiState.pasien.isEmpty()){
-                return Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+    when (homePasienUiState) {
+        is HomePsnUiState.Loading -> OnLoading(modifier.fillMaxWidth())
+        is HomePsnUiState.Success ->
+            if (homePasienUiState.pasien.isEmpty()) {
+                Box(
+                    modifier = modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(text = "Tidak ada data kontak")
                 }
             } else {
-                PasienLayout(
-                    pasienList = homePasienUiState.pasien,modifier = modifier.fillMaxWidth(),
-                    onDeleteClick = {
-                        onDeleteClick(it)
-                    },
-                    onDetailClick = {
-                        onDeleteClick(it)
-                    }
+                PsnLayout(
+                    pasien = homePasienUiState.pasien,
+                    modifier = modifier.fillMaxWidth(),
+                    onDeleteClick = { onDeleteClick(it) },
+                    onDetailClick = { onDetailClick(it.id_pasien) }  // Passing id_pasien as Int
                 )
             }
-        is HomePasienUiState.Error -> OnError(retryAction, modifier = modifier.fillMaxSize())
+        is HomePsnUiState.Error -> OnError(retryAction, modifier.fillMaxSize())
     }
 }
+
 
 @Composable
 fun OnLoading(modifier: Modifier = Modifier) {
@@ -123,7 +133,9 @@ fun OnError(retryAction: () -> Unit, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = painterResource(id = R.drawable.error), contentDescription = ""
+        Image(
+            painter = painterResource(id = R.drawable.error),
+            contentDescription = ""
         )
         Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
         Button(onClick = retryAction) {
@@ -133,8 +145,8 @@ fun OnError(retryAction: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PasienLayout(
-    pasienList: List<Pasien>,
+fun PsnLayout(
+    pasien: List<Pasien>,
     modifier: Modifier = Modifier,
     onDetailClick: (Pasien) -> Unit,
     onDeleteClick: (Pasien) -> Unit = {}
@@ -144,7 +156,7 @@ fun PasienLayout(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(pasienList) { pasien ->
+        items(pasien) { pasien ->
             PasienCard(
                 pasien = pasien,
                 modifier = Modifier
@@ -155,17 +167,21 @@ fun PasienLayout(
         }
     }
 }
-
 @Composable
 fun PasienCard(
     pasien: Pasien,
     modifier: Modifier = Modifier,
-    onDeleteClick: (Pasien) -> Unit = {}
+    onDeleteClick: (Pasien) -> Unit = {},
+    onUpdatePasienClick: (Pasien) -> Unit = {}
 ) {
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -176,37 +192,28 @@ fun PasienCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = pasien.nama,
-                    style = MaterialTheme.typography.titleLarge
+                    text = pasien.id_pasien.toString(),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp
+                    )
                 )
                 Spacer(Modifier.weight(1f))
+
+
+                // Tombol Delete
                 IconButton(onClick = { onDeleteClick(pasien) }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = null,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
-                Text(
-                    text = pasien.id_pasien,
-                    style = MaterialTheme.typography.titleMedium
-                )
             }
 
             Text(
-                text = "Alamat: ${pasien.alamat}",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Telepon: ${pasien.nomor_telepon}",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Tanggal Lahir: ${pasien.tanggal_lahir}",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Riwayat Medikal: ${pasien.riwayat_medikal}",
-                style = MaterialTheme.typography.titleMedium
+                text = pasien.nama,
+                style = MaterialTheme.typography.displayLarge
             )
         }
     }
