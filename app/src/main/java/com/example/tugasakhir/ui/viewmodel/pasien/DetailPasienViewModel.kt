@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tugasakhir.model.Pasien
 import com.example.tugasakhir.repository.PasienRepository
-import com.example.tugasakhir.ui.viewpasien.DestinasiDetailPasien
+import com.example.tugasakhir.ui.view.pasien.DestinasiDetailPasien
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
