@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tugasakhir.ui.navigation.PengelolaHalaman
 import com.example.tugasakhir.ui.theme.TugasAkhirTheme
-import com.example.tugasakhir.ui.viewpasien.HomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,8 +21,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             TugasAkhirTheme() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(
-                        navigateToItemEntry = {},
+                    PengelolaHalaman(
+                       // navigateToItemEntry = {},
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
