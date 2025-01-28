@@ -13,7 +13,7 @@ interface TerapisApiService {
         "Accept: application/json",
         "Content-Type: application/json",
     )
-    @GET("terapis")
+    @GET("terapis/")
     suspend fun getAllTerapis(): AllTerapisResponse
 
     @GET("terapis/{id_terapis}")
@@ -22,7 +22,7 @@ interface TerapisApiService {
     @POST("terapis/store")
     suspend fun insertTerapis(@Body terapis: Terapis): Response<Terapis> // Menambahkan terapis baru
 
-    @PUT("terapis/{id_terapis}")
+    @PUT("terapis/updateterapis{id_terapis}")
     suspend fun updateTerapis(@Path("id_terapis") id_terapi: Int, @Body terapis: Terapis)
 
     @DELETE("terapis/{id_terapis}")

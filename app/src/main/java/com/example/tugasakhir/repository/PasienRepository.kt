@@ -2,7 +2,6 @@ package com.example.tugasakhir.repository
 
 import com.example.tugasakhir.model.AllPasienResponse
 import com.example.tugasakhir.model.Pasien
-import com.example.tugasakhir.model.PasienDetailResponse
 import com.example.tugasakhir.service.PasienApiService
 import java.io.IOException
 
