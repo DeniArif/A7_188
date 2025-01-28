@@ -51,7 +51,7 @@ fun EntryPasienScreen(
         topBar = {
             CostumeTopAppBar(
                 title = DestinasiInsertPsn.titleRes,
-                canNavigateBack = true,
+                canNavigateBack = false,
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack
             )
