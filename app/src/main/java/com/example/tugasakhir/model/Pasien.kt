@@ -1,10 +1,11 @@
 package com.example.tugasakhir.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Pasien(
-    val id_pasien: String,
+    val id_pasien: Int,
     val nama: String,
     val alamat: String,
     val nomor_telepon: String,
@@ -20,8 +21,8 @@ data class AllPasienResponse( // Perbaikan nama
 )
 
 @Serializable
-data class PasienDetailResponse( // Perbaikan nama
+data class PasienDetailResponse(
     val status: Boolean,
     val message: String,
-    val data: List<Pasien>
+    val data: Pasien
 )
